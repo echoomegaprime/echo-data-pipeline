@@ -5,9 +5,15 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "tail": "wrangler tail"
+    "tail": "wrangler tail",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
-  "keywords": ["etl", "data-pipeline", "cloudflare-worker"],
+  "keywords": [
+    "etl",
+    "data-pipeline",
+    "cloudflare-worker"
+  ],
   "author": "ECHO-OMEGA-PRIME",
   "license": "ISC",
   "description": "ETL/data pipeline orchestration Worker for the ECHO ecosystem",
@@ -15,8 +21,9 @@
     "hono": "^4.12.8"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260317.1",
+    "@cloudflare/workers-types": "^5.20260811.1",
     "typescript": "^5.9.3",
+    "vitest": "^4.1.10",
     "wrangler": "^4.76.0"
   }
 }

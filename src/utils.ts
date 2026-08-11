@@ -6,6 +6,26 @@ export function generateId(): string {
   return `${ts}-${rand}`;
 }
 
+// Constant-time string comparison — runtime must not depend on where (or
+// whether) the inputs first differ, including a length mismatch, or an
+// attacker can recover the key length/prefix via timing.
+export function timingSafeEqual(a: string | undefined | null, b: string | undefined | null): boolean {
+  if (!a || !b) return false;
+  const encoder = new TextEncoder();
+  const bufA = encoder.encode(a);
+  const bufB = encoder.encode(b);
+  const len = Math.max(bufA.length, bufB.length, 1);
+  const padA = new Uint8Array(len);
+  const padB = new Uint8Array(len);
+  padA.set(bufA);
+  padB.set(bufB);
+  let mismatch = bufA.length ^ bufB.length;
+  for (let i = 0; i < len; i++) {
+    mismatch |= (padA[i] ?? 0) ^ (padB[i] ?? 0);
+  }
+  return mismatch === 0;
+}
+
 export function response<T>(data: T, status = 200): Response {
   const body: ApiResponse<T> = {
     success: status >= 200 && status < 300,

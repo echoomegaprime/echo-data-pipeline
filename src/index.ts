@@ -3,13 +3,13 @@ import { cors } from 'hono/cors';
 import type { Env, Pipeline, PipelineRun, PipelineStep, QueueItem, CreatePipelineBody, UpdatePipelineBody } from './types';
 import { ensureSchema } from './schema';
 import { logger } from './logger';
-import { generateId, response, errorResponse, nowISO, parsePagination } from './utils';
+import { generateId, response, errorResponse, nowISO, parsePagination, timingSafeEqual } from './utils';
 import { executePipeline } from './executor';
 import { processQueue, aggregateHourlyStats, dailyCleanup } from './crons';
 
 const ALLOWED_ORIGINS = ['https://echo-ept.com','https://www.echo-ept.com','https://echo-op.com','https://profinishusa.com','https://bgat.echo-op.com'];
 
-const app = new Hono<{ Bindings: Env }>();
+export const app = new Hono<{ Bindings: Env }>();
 
 const VERSION = '1.0.0';
 const SERVICE = 'echo-data-pipeline';
@@ -37,8 +37,11 @@ app.use('*', async (c, next) => {
   if (c.req.path === '/' || c.req.path === '/health' || c.req.method === 'OPTIONS') {
     return next();
   }
+  if (!c.env.ECHO_API_KEY) {
+    return c.json({ success: false, error: 'Service misconfigured: ECHO_API_KEY not set', timestamp: nowISO() }, 503);
+  }
   const apiKey = c.req.header('X-Echo-API-Key');
-  if (!c.env.ECHO_API_KEY || apiKey !== c.env.ECHO_API_KEY) {
+  if (!timingSafeEqual(apiKey, c.env.ECHO_API_KEY)) {
     return c.json({ success: false, error: 'Unauthorized: invalid or missing X-Echo-API-Key', timestamp: nowISO() }, 401);
   }
   return next();

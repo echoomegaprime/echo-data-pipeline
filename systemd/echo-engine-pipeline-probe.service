@@ -1,0 +1,17 @@
+[Unit]
+Description=ECHO engine pipeline health prober (ADR-0031 verified_live feeder; ops-20260924)
+After=network-online.target postgresql@16-main.service echo-workers.service
+Documentation=https://github.com/echoomegaprime/echo-data-pipeline/blob/main/docs/rnd-10-timeout-startsec.md
+
+[Service]
+Type=oneshot
+User=forge
+Group=forge
+WorkingDirectory=/home/forge/echo-worker-server
+EnvironmentFile=/home/forge/echo-worker-server/.env
+Environment=PGAPPNAME=echo-engine-pipeline-probe
+ExecStart=/home/forge/echo-worker-server/venv/bin/python /home/forge/echo-worker-server/bin/ops_engine_pipeline_probe.py
+# rnd-10 / ECHO R&D proposal #10: raise start budget so the 687-item probe cycle
+# is not SIGTERM'd by systemd's default TimeoutStartSec (~90s) under load.
+TimeoutStartSec=300
+Nice=10

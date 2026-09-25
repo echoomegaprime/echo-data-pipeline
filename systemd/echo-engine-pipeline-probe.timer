@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh engine verified_live health every 5 min (window is 1h)
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

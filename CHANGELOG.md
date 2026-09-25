@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **rnd-10 / R&D proposal #10:** versioned `TimeoutStartSec=300` for
+  `echo-engine-pipeline-probe.service` (unit + drop-in), stdlib timeout policy
+  helpers, CertForge `rnd` journey, and mocked slow-probe tests. Class A —
+  configuration/docs/tests only; no live deploy from this change.
+
 ### Fixed
 - Auth middleware: split the misconfigured-secret case into an explicit 503, and switched the
   API-key comparison to constant-time `timingSafeEqual` (was already fail-closed, but a raw
